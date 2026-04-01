@@ -7,12 +7,13 @@ import {ApolloDriver} from "@nestjs/apollo"
 import { AppResolver } from './app.resolver';
 import { ComponentsModule } from './components/components.module';
 import { DatabaseModule } from './database/database.module';
-
+console.log("MONGO ENV:", process.env.MONGO_DEV);
 @Module({
   imports: [
     ConfigModule.forRoot(), GraphQLModule.forRoot({
       driver: ApolloDriver,
       playground: true,
+      isGlobal: true,
       upload: false,
       autoSchemaFile:true,
     }), ComponentsModule, DatabaseModule
