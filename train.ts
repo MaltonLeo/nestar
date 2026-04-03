@@ -17,7 +17,7 @@ function printNumbers() {
     }
   }, 1000);
 }
-printNumbers()
+printNumbers();
 
 // // TASK ZJ:
 
