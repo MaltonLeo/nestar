@@ -9,13 +9,14 @@ import type { ObjectId } from 'mongoose';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { MemberType } from '../../libs/enums/member.enum';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { MemberUpdate } from '../../libs/dto/member/member.update';
 
 
-@Resolver()
+@Resolver()//Resolverimiz resolver decoratori yordamida joriy qilingan
 export class MemberResolver {
-    constructor(private readonly memberService: MemberService){}
-    
-    @Mutation(() => Member)
+    constructor(private readonly memberService: MemberService){}//service modullarimizni membermodule dagi providerlar bilan chaqirib ishlatamiz
+        // MemberService modeldan instance olib memberService objectga tenglaymiz
+    @Mutation(() => Member)// Mutation post methodiga to'g'ri keladi
     public async signup(@Args("input") input: MemberInput): Promise<Member> {
            console.log("Mutation: signup");
            return this.memberService.signup(input);
@@ -27,13 +28,13 @@ export class MemberResolver {
           console.log("Mutation: login");
           return this.memberService.login(input);     
     }
-
-    //Authenticated
-    @UseGuards(AuthGuard)
+    @Roles(MemberType.USER,MemberType.AGENT)
+    @UseGuards(RolesGuard)
     @Mutation(() => String)
-    public async updateMember(@AuthMember("_id") memberId: ObjectId): Promise<string> {
-        console.log("Mutation: updateMember");
-        return this.memberService.updateMember();
+    public async checkAuthRoles(@AuthMember() authMember: Member): Promise<string> {
+        console.log("Query: checkAuthRoles");
+        
+        return `Hi ${authMember.memberNick}, you are ${authMember.memberType} (memberID:${authMember._id} )`;   
     }
 
     @UseGuards(AuthGuard)
@@ -44,16 +45,19 @@ export class MemberResolver {
         return `Hi ${memberNick}`;   
     }
 
-    @Roles(MemberType.USER,MemberType.AGENT)
-    @UseGuards(RolesGuard)
-    @Mutation(() => String)
-    public async checkAuthRoles(@AuthMember() authMember: Member): Promise<string> {
-        console.log("Query: checkAuthRoles");
-        
-        return `Hi ${authMember.memberNick}, you are ${authMember.memberType} (memberID:${authMember._id} )`;   
+    //Authenticated
+    @UseGuards(AuthGuard)
+    @Mutation(() => Member)
+    public async updateMember(
+        @Args("input") input: MemberUpdate,
+        @AuthMember("_id") memberId: ObjectId
+    ): Promise<Member> {
+        console.log("Mutation: updateMember");
+        delete input._id;
+        return this.memberService.updateMember(memberId, input);
     }
 
-    @Query(() => String)
+    @Query(() => String)// Query get methodiga to'g'ri keladi
     public async getMember(): Promise<string> {
         console.log("Query: getMember");
         return this.memberService.getMember();
