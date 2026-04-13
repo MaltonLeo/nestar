@@ -11,6 +11,7 @@ import { MemberType } from '../../libs/enums/member.enum';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { MemberUpdate } from '../../libs/dto/member/member.update';
 import { shapeIntoMongoObjectId } from '../../libs/config';
+import { WithoutGuard } from '../auth/guards/without.guard';
 
 
 @Resolver()//Resolverimiz resolver decoratori yordamida joriy qilingan
@@ -57,12 +58,14 @@ export class MemberResolver {
         delete input._id;
         return this.memberService.updateMember(memberId, input);
     }
-
-    @Query(() => Member)// Query get methodiga to'g'ri keladi
-    public async getMember(@Args("memberId") input:string): Promise<Member> {
+    @UseGuards(WithoutGuard)
+    @Query(() =>
+         Member)// Query get methodiga to'g'ri keladi
+    public async getMember(@Args("memberId") input:string, @AuthMember('_id') memberId: ObjectId): Promise<Member> {
         console.log("Query: getMember");
+        console.log("memberId:", memberId)
         const targetId = shapeIntoMongoObjectId(input)
-        return this.memberService.getMember(targetId);
+        return this.memberService.getMember(memberId,targetId);
     }
 
     //**ADMIN */
