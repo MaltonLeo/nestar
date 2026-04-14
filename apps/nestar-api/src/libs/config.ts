@@ -1,11 +1,18 @@
 import {ObjectId} from "bson"
 
-export const aavailableAgentSorts = [
+export const availableAgentSorts = [
     "createAt",
     "updateAt",
     "memberLikes",
     "memberViews",
     "memberRank"
+]
+
+export const availableMemberSorts = [
+    "createAt",
+    "updateAt",
+    "memberLikes",
+    "memberViews",
 ]
 
 export const shapeIntoMongoObjectId = (target: any) => {
