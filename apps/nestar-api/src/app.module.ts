@@ -12,17 +12,18 @@ import { T } from './libs/types/common';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(), GraphQLModule.forRoot({
-      driver: ApolloDriver,
+    ConfigModule.forRoot(), //environmental variableni ishga tushiradi
+    GraphQLModule.forRoot({//GraphQl API integration
+      driver: ApolloDriver,//configurationlarni biriktirdik
       playground: true,
       isGlobal: true,
       upload: false,
       autoSchemaFile:true,
-      formatError:(error: T) => {
-        const graphQLFormatError = {
-          code: error?.extensions.code,
-          message: 
-          error?.extensions?.exception?.response?.message || 
+      formatError:(error: T) => {//hamda graphQL ga mantig'imizda xosil bo'layotgan jamiki
+        const graphQLFormatError = {// errorlarni praphQL module orqali error handling qilib
+          code: error?.extensions.code,//o'zimizning customized xatoliklarni yaratdik
+          message:               // va uni clientlarimizga response sifatida yubordik
+          error?.extensions?.exception?.response?.message || // va bu global tarzda amalga oshirildi
           error?.extensions?.response?.message || 
           error?.message,
         }
@@ -30,8 +31,8 @@ import { T } from './libs/types/common';
         return graphQLFormatError;
       }
     }), 
-    ComponentsModule, 
-    DatabaseModule
+    ComponentsModule,//bu yerga back end ni asosiy mantig'i joylashgan va har bir module ni o'zining import va providerlari mavjud 
+    DatabaseModule//
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],
