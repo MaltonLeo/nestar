@@ -1,10 +1,11 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MemberResolver } from './member.resolver';
 import { MemberService } from './member.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import MemberSchema from '../../schemas/Member_model';
 import { AuthModule } from '../auth/auth.module';
 import { ViewModule } from '../view/view.module';
+
 
 @Module({
   imports:[
@@ -15,8 +16,10 @@ import { ViewModule } from '../view/view.module';
     ]), 
     AuthModule,
     ViewModule,
+
   ],
-  providers: [MemberResolver, MemberService]
+  providers: [MemberResolver, MemberService],
+  exports:[MemberService],
 })
 export class MemberModule {}
 
