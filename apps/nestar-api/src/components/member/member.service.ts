@@ -145,7 +145,7 @@ export class MemberService {
         return result
     }
 
-    public async memberStatsEdidor(input: StatisticModifier): Promise<Member>{
+    public async memberStatsEditor(input: StatisticModifier): Promise<Member>{
         console.log("executed")
         const {_id, targetKey, modifier} = input;
         const result : Member | null =  await this.memberModel
