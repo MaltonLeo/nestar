@@ -1,6 +1,6 @@
 import { Mutation, Resolver, Query, Args } from '@nestjs/graphql';
 import { MemberService } from './member.service';
-import { UseGuards } from '@nestjs/common';
+import { BadRequestException, UseGuards } from '@nestjs/common';
 import { AgentsInquiry, LoginInput, MemberInput, MembersInquiry } from '../../libs/dto/member/member.input';
 import { Member, Members } from '../../libs/dto/member/member';
 import { AuthGuard } from '../auth/guards/auth.guard';
@@ -109,9 +109,9 @@ public async imageUploader(
 ): Promise<string> {
 	console.log('Mutation: imageUploader');
 
-	if (!filename) throw new Error(Message.UPLOAD_FAILED);
+	if (!filename) throw new BadRequestException(Message.UPLOAD_FAILED);
 const validMime = validMimeTypes.includes(mimetype);
-if (!validMime) throw new Error(Message.PROVIDE_ALLOWED_FORMAT);
+if (!validMime) throw new BadRequestException(Message.PROVIDE_ALLOWED_FORMAT);
 
 const imageName = getSerialForImage(filename);
 const url = `uploads/${target}/${imageName}`;
@@ -123,7 +123,7 @@ const result = await new Promise((resolve, reject) => {
 		.on('finish', async () => resolve(true))
 		.on('error', () => reject(false));
 });
-if (!result) throw new Error(Message.UPLOAD_FAILED);
+if (!result) throw new BadRequestException(Message.UPLOAD_FAILED);
 
 return url;
 }
@@ -143,7 +143,7 @@ files: Promise<FileUpload>[],
 			const { filename, mimetype, encoding, createReadStream } = await img;
 
 			const validMime = validMimeTypes.includes(mimetype);
-			if (!validMime) throw new Error(Message.PROVIDE_ALLOWED_FORMAT);
+			if (!validMime) throw new BadRequestException(Message.PROVIDE_ALLOWED_FORMAT);
 
 			const imageName = getSerialForImage(filename);
 			const url = `uploads/${target}/${imageName}`;
@@ -155,7 +155,7 @@ files: Promise<FileUpload>[],
 					.on('finish', () => resolve(true))
 					.on('error', () => reject(false));
 			});
-			if (!result) throw new Error(Message.UPLOAD_FAILED);
+			if (!result) throw new BadRequestException(Message.UPLOAD_FAILED);
 
 			uploadedImages[index] = url;
 		} catch (err) {

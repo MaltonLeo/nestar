@@ -11,15 +11,15 @@ import { ViewModule } from '../view/view.module';
   imports:[
     MongooseModule.forFeature([
       {name: "Member", 
-        schema: MemberSchema
+        schema: MemberSchema//Schema validation object
       }
-    ]), 
-    AuthModule,
-    ViewModule,
+    ]), //Member Schema model
+    AuthModule, //bular tashqaridan keladigan va member Resolverda 
+    ViewModule,// ishlatiladigan modullar
 
   ],
-  providers: [MemberResolver, MemberService],
-  exports:[MemberService],
+  providers: [MemberResolver, MemberService],//bular member module uchun xizmat qiladi
+  exports:[MemberService],//boshqa module da foydalanish uchun export qilamiz
 })
 export class MemberModule {}
 
