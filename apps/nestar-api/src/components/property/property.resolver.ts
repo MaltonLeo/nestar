@@ -34,8 +34,8 @@ public async getProperty(
     @AuthMember('_id') memberId: Schema.Types.ObjectId,
 ) : Promise<Property> {
     console.log('Query: getProperty');
-    const propertyId = shapeIntoMongoObjectId(input);
-    return await this.propertyService.getProperty(memberId, propertyId)
+    const propertyId = shapeIntoMongoObjectId(input);//propertyId ni mongoObjectId ga aylantirib beradi
+    return await this.propertyService.getProperty(memberId, propertyId)//memberId va propertyId ni argument sifatida path qilamiz
 }
 
 @Roles(MemberType.AGENT)
@@ -55,8 +55,8 @@ public async updateProperty(
 @UseGuards(WithoutGuard)
 @Query((returns) => Properties)
 public async getProperties(
-  @Args('input') input: PropertiesInquiry,
-  @AuthMember('_id') memberId: Schema.Types.ObjectId,
+  @Args('input') input: PropertiesInquiry,// input dan kelayotgan data
+  @AuthMember('_id') memberId: Schema.Types.ObjectId,//ro'yxatdan o'tgan user bo'sa memberId sini olib beradi
 ): Promise<Properties> {
   console.log('Query: getProperties');
   return await this.propertyService.getProperties(memberId, input);

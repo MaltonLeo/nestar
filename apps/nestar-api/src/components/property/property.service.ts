@@ -41,24 +41,24 @@ export class PropertyService {
     }
 
     public async getProperty(memberId: ObjectId, propertyId:ObjectId): Promise<Property> {
-        const search :T = {
-            _id: propertyId,
-            propertyStatus: PropertyStatus.ACTIVE,
+        const search :T = {// search maxsus objecti xosil qilinyapti
+            _id: propertyId,// biz ko'rmoqchi bo'lgsn propertyId
+            propertyStatus: PropertyStatus.ACTIVE,//biz ko'rmoqchi bo'lgan propertyni statusi 
         };
+                                                               //yuqorida hosil qilingan search ni argument sifatida path qilamiz
+      const targetProperty: Property = await this.propertyModel.findOne(search).lean<Property>().exec() as Property;//lean ni ishlatishdan maqsad hosil qilinayotgan
+      if(!targetProperty) throw new InternalServerErrorException(Message.NO_DATA_FOUND);                            //targetProperty objectimizni o'zgartirish
 
-      const targetProperty: Property = await this.propertyModel.findOne(search).lean<Property>().exec() as Property;
-      if(!targetProperty) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
-
-      if(memberId) {
-        const viewInput = { memberId: memberId, viewRefId: propertyId, viewGroup: ViewGroup.PROPERTY};
-        const newView = await this.viewService.recordView(viewInput);
-        if (newView) {
+      if(memberId) {// agar memberimiz Auth bo'lgan bo'sa bu qism ishga tushadi
+        const viewInput = { memberId: memberId, viewRefId: propertyId, viewGroup: ViewGroup.PROPERTY};//property imizni ko'rilganini amalga oshiruvchi log
+        const newView = await this.viewService.recordView(viewInput);//agar yangi record yuzaga kelsa pastdagi hosil qilingan mantiq 
+        if (newView) {// yordamida 
             await this.propertyStatsEditor({ _id: propertyId, targetKey: 'propertyViews', modifier:1 })
             targetProperty.propertyViews++;
         }
 
       //meLiked
-    }
+    }                     //getmember ga null qo'yishimizni sababi bizga faqat ko'rishni o'zi muhim kim ko'rgani emas
     targetProperty.memberData = await this.memberService.getMember(null , targetProperty.memberId);
     return targetProperty;
 }
@@ -78,15 +78,15 @@ public async propertyStatsEditor(input: StatisticModifier): Promise<Property> {
 } 
 
 public async updateProperty(memberId: ObjectId, input: PropertyUpdate): Promise<Property> {
-  let { propertyStatus, soldAt, deletedAt } = input;
-  const search: T = {
-    _id: input._id,
-    memberId: memberId,
-    propertyStatus: PropertyStatus.ACTIVE,
+  let { propertyStatus, soldAt, deletedAt } = input;// distraction qilib olyapmiz
+  const search: T = { // bu yerda search objectini hosil qilyapmiz
+    _id: input._id,//aynan qaysi property ni yangilanishini ko'rsatyapmiz
+    memberId: memberId,// AGENT faqat o'ziga tegishli property larni update qila oladi
+    propertyStatus: PropertyStatus.ACTIVE,//faqat ACTIVE holatdagi propertylarimizni update qila oladi AGENT
   };
 
-  if (propertyStatus === PropertyStatus.SOLD) soldAt = moment().toDate();
-  else if (propertyStatus === PropertyStatus.DELETE) deletedAt = moment().toDate();
+  if (propertyStatus === PropertyStatus.SOLD) soldAt = moment().toDate();// sotilgan vaqtini belgilab ketyapmiz
+  else if (propertyStatus === PropertyStatus.DELETE) deletedAt = moment().toDate();// o'chirilgan vaqtini belgilab ketyapmiz
 
   const result = await this.propertyModel
     .findOneAndUpdate(search, input, {
@@ -95,9 +95,9 @@ public async updateProperty(memberId: ObjectId, input: PropertyUpdate): Promise<
     .exec();
   if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
 
-  if (soldAt || deletedAt) {
-    await this.memberService.memberStatsEditor({
-      _id: memberId,
+  if (soldAt || deletedAt) {// agar statusi o'rgarsa AGENT ni
+    await this.memberService.memberStatsEditor({// property lar sonini
+      _id: memberId,                           // bittaga kamaytiryapmiz
       targetKey: 'memberProperties',
       modifier: -1,
     });
@@ -107,7 +107,7 @@ public async updateProperty(memberId: ObjectId, input: PropertyUpdate): Promise<
 }
 
 public async getProperties(memberId: ObjectId, input: PropertiesInquiry): Promise<Properties> {
-  const match: T = { propertyStatus: PropertyStatus.ACTIVE };
+  const match: T = { propertyStatus: PropertyStatus.ACTIVE };//foydalanuvchilar ACTIVE propertylarni ko'rish kerak
   const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
 
   this.shapeMatchQuery(match, input);
@@ -138,7 +138,7 @@ public async getProperties(memberId: ObjectId, input: PropertiesInquiry): Promis
 
 private shapeMatchQuery(match: T, input: PropertiesInquiry): void {
   const {
-    memberId,
+    memberId,//iput ni ichida shu qiymatlarni qabul qilyapmiz
     locationList,
     roomsList,
     bedsList,
@@ -149,9 +149,9 @@ private shapeMatchQuery(match: T, input: PropertiesInquiry): void {
     options,
     text,
   } = input.search;
-
+//agar memberId mavjud bo'lsa match ga memberId ni yuklaydi
   if (memberId) match.memberId = shapeIntoMongoObjectId(memberId);
-  if (locationList) match.propertyLocation = { $in: locationList };
+  if (locationList) match.propertyLocation = { $in: locationList };//ma'lumotlarni array ko'rinishida olib beradi
   if (roomsList) match.propertyRooms = { $in: roomsList };
   if (bedsList) match.propertyBeds = { $in: bedsList };
   if (typeList) match.propertyType = { $in: typeList };
@@ -159,7 +159,7 @@ private shapeMatchQuery(match: T, input: PropertiesInquiry): void {
   if (pricesRange) match.propertyPrice = { $gte: pricesRange.start, $lte: pricesRange.end };
   if (periodsRange) match.createdAt = { $gte: periodsRange.start, $lte: periodsRange.end };
   if (squaresRange) match.propertySquare = { $gte: squaresRange.start, $lte: squaresRange.end };
-
+// text imizni Regex orqali search qilyapmiz
   if (text) match.propertyTitle = { $regex: new RegExp(text, 'i') };
   if (options) {
     match['$or'] = options.map((ele) => {
@@ -169,12 +169,12 @@ private shapeMatchQuery(match: T, input: PropertiesInquiry): void {
 }
 
 public async getAgentProperties(memberId: ObjectId, input: AgentPropertiesInquiry): Promise<Properties> {
-  const { propertyStatus } = input.search;
+  const { propertyStatus } = input.search; //propertyStatus ni tekshiryapmiz
   if (propertyStatus === PropertyStatus.DELETE) throw new BadRequestException(Message.NOT_ALLOWED_REQUEST);
 
   const match: T = {
     memberId: memberId,
-    propertyStatus: propertyStatus ?? { $ne: PropertyStatus.DELETE },
+    propertyStatus: propertyStatus ?? { $ne: PropertyStatus.DELETE },//statusi DELETE ga teng bo'lmasligi kerak
   };
   const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
 
@@ -188,8 +188,8 @@ public async getAgentProperties(memberId: ObjectId, input: AgentPropertiesInquir
             { $skip: (input.page - 1) * input.limit },
             { $limit: input.limit },
             lookupMember,
-            { $unwind: '$memberData' },
-          ],
+            { $unwind: '$memberData' },// unwind arrayni tashlab yuborib memberData ni o'zini beradi
+          ],                           // ya'ni [memberData] => memberData
           metaCounter: [{ $count: 'total' }],
         },
       },
@@ -197,7 +197,7 @@ public async getAgentProperties(memberId: ObjectId, input: AgentPropertiesInquir
     .exec();
   if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
-  return result[0];
+  return result[0]; //aggregation array qaytargani uchun nolinchi indeks ni return qilyapmiz
 }
 
 public async getAllPropertiesByAdmin(input: AllPropertiesInquiry): Promise<Properties> {
@@ -234,7 +234,7 @@ public async updatePropertyByAdmin(input: PropertyUpdate): Promise<Property> {
   let { propertyStatus, soldAt, deletedAt } = input;
   const search: T = {
     _id: input._id,
-    // propertyStatus: PropertyStatus.ACTIVE,
+    propertyStatus: PropertyStatus.ACTIVE,
   };
 
   if (propertyStatus === PropertyStatus.SOLD) soldAt = moment().toDate();
