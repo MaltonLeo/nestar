@@ -28,7 +28,13 @@ export const availablePropertySorts = [
   'propertyPrice',
 ];
   
-
+export const availableBoardArticleSorts = [
+  'createdAt',
+  'updatedAt',
+  'articleLikes',
+  'articleViews',
+];
+  
 
 
  //** IMAGE CONFIGURATION*/ 
@@ -46,10 +52,10 @@ export const shapeIntoMongoObjectId = (target: any) => {
 }
 
 export const lookupMember = {
-    $lookup: {
-        from: 'members',
-        localField: 'memberId',
-        foreignField: '_id',
-        as:'memberData',
+    $lookup: { //bizni property imizni ichida
+        from: 'members',//topib berilgan ma'lumotlarni ichidan 
+        localField: 'memberId',//memberId ni olib
+        foreignField: '_id',// members collection ni ichidan _id nomi bilan izlab ber
+        as:'memberData', //va topilgan ma'lumotni memberData sifatida ber deyapmiz va u array ichida bitta ma'lumot bo'ladi
         },
 }
