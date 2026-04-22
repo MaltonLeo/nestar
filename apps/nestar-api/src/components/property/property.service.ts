@@ -61,7 +61,9 @@ export class PropertyService {
             targetProperty.propertyViews++;
         }
 
-      //meLiked
+       //meLiked
+        const likeInput = {memberId: memberId, likeRefId: propertyId, likeGroup: LikeGroup.PROPERTY};
+        targetProperty.meLiked = await this.likeService.checkLikeExistence(likeInput);
     }                     //getmember ga null qo'yishimizni sababi bizga faqat ko'rishni o'zi muhim kim ko'rgani emas
     targetProperty.memberData = await this.memberService.getMember(null , targetProperty.memberId);
     return targetProperty;
