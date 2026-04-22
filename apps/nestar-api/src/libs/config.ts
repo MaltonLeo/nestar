@@ -62,3 +62,21 @@ export const lookupMember = {
         as:'memberData', //va topilgan ma'lumotni memberData sifatida ber deyapmiz va u array ichida bitta ma'lumot bo'ladi
         },
 }
+
+export const lookupFollowingData = {
+  $lookup: {
+    from: 'members',
+    localField: 'followingId',
+    foreignField: '_id',
+    as: 'followingData',
+  },
+};
+
+export const lookupFollowerData = {
+  $lookup: {
+    from: 'members',
+    localField: 'followerId',
+    foreignField: '_id',
+    as: 'followerData',
+  },
+};
