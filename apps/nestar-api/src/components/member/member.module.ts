@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import MemberSchema from '../../schemas/Member_model';
 import { AuthModule } from '../auth/auth.module';
 import { ViewModule } from '../view/view.module';
+import { LikeModule } from '../like/like.module';
 
 
 @Module({
@@ -16,7 +17,7 @@ import { ViewModule } from '../view/view.module';
     ]), //Member Schema model
     AuthModule, //bular tashqaridan keladigan va member Resolverda 
     ViewModule,// ishlatiladigan modullar
-
+    LikeModule,
   ],
   providers: [MemberResolver, MemberService],//bular member module uchun xizmat qiladi
   exports:[MemberService],//boshqa module da foydalanish uchun export qilamiz

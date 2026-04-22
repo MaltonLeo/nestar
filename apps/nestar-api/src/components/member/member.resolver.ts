@@ -5,7 +5,7 @@ import { AgentsInquiry, LoginInput, MemberInput, MembersInquiry } from '../../li
 import { Member, Members } from '../../libs/dto/member/member';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
-import type { ObjectId } from 'mongoose';
+import type { ObjectId, Schema } from 'mongoose';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { MemberType } from '../../libs/enums/member.enum';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -79,6 +79,17 @@ export class MemberResolver {
     public async getAgents(@Args("input") input:AgentsInquiry, @AuthMember('_id') memberId: ObjectId): Promise<Members>{
         console.log("Query: getAgents")
         return await this.memberService.getAgents(memberId,input)
+    }
+
+    @UseGuards(AuthGuard)
+    @Mutation(() => Member)
+    public async likeTargetMember(
+        @Args("memberId") input: string,
+        @AuthMember('_id') memberId: Schema.Types.ObjectId,
+    ): Promise<Member>{
+       console.log("Mutation: likeTargetMember");
+       const likeRefId = shapeIntoMongoObjectId(input);
+       return await this.memberService.likeTargetMember(memberId,likeRefId)
     }
 
     //**ADMIN */
