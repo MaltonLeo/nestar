@@ -15,6 +15,7 @@ import { LikeGroup } from '../../libs/enums/like.enum';
 import { LikeService } from '../like/like.service';
 import { Mode } from 'fs';
 import { Follower, Following, MeFollowed } from '../../libs/dto/follow/follow';
+import { lookupAuthMemberLiked } from '../../libs/config';
 
 @Injectable()
 export class MemberService {
@@ -115,12 +116,17 @@ export class MemberService {
        if(text) match.memberNick = {$regex: new RegExp(text, 'i')}
        console.log("match:", match)
 
-       const result = await this.memberModel.aggregate([
+       const result = await this.memberModel
+       .aggregate([
        {$match: match},
        {$sort: sort},
        {
         $facet:{
-            list: [{$skip: (input.page - 1) * input.limit }, {$limit: input.limit}],
+            list: [
+                {$skip: (input.page - 1) * input.limit }, 
+                {$limit: input.limit},
+                lookupAuthMemberLiked(memberId)   
+            ],
             metaCounter: [{$count: "total"}],
         }
        }
@@ -130,7 +136,7 @@ export class MemberService {
         return result[0]
     }
 
-
+//**Like */
     public async likeTargetMember(memberId: Schema.Types.ObjectId, likeRefId: any): Promise<Member>{
       const target : Member|null = await this.memberModel.findOne({ _id: likeRefId, memberStatus: MemberStatus.ACTIVE}).exec();
       if(!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
