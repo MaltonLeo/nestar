@@ -87,6 +87,43 @@ return {
   }
 };
 };
+
+interface LookupAuthMemberFollowed {
+  followerId: T;
+  followingId: string;
+}
+export const lookupAuthMemberFollowed = (input: LookupAuthMemberFollowed) => {
+const {followerId, followingId} = input;
+  return {
+  $lookup: {
+    from: "likes",
+    let: {
+      localFollowerId: followerId,
+      localFollowingId: followingId,
+      localMyFavorite: true
+    },
+    pipeline:[
+      {
+      $match: {
+        $expr:{
+          $and :[ {$eq: ["$followerId","$$localFollowerId"] }, {$eq: ["$followingId", "$$localFollowingId"]}]
+        }
+      }
+    },
+    {
+      $project: {
+        _id:0,
+        followerId: 1,
+        followingId: 1 ,
+        myFollowing:"$$localMyFavorite",
+      }
+    }
+    ],
+    as: "meFollowed"
+  }
+};
+};
+
 export const lookupMember = {
     $lookup: { //bizni property imizni ichida
         from: 'members',//topib berilgan ma'lumotlarni ichidan 
