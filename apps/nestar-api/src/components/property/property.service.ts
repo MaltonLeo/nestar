@@ -167,6 +167,10 @@ public async getFavorites(memberId: Schema.Types.ObjectId, input: OrdinaryInquir
   return await this.likeService.getFavoriteProperties(memberId, input);
 }
 
+public async getVisited(memberId: Schema.Types.ObjectId, input: OrdinaryInquiry) : Promise<Properties>{
+  return await this.viewService.getVisitedProperties(memberId, input);
+}
+
 public async getAgentProperties(memberId: ObjectId, input: AgentPropertiesInquiry): Promise<Properties> {
   const { propertyStatus } = input.search; //propertyStatus ni tekshiryapmiz
   if (propertyStatus === PropertyStatus.DELETE) throw new BadRequestException(Message.NOT_ALLOWED_REQUEST);
