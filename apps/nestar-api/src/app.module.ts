@@ -9,6 +9,7 @@ import { ComponentsModule } from './components/components.module';
 import { DatabaseModule } from './database/database.module';
 import { error } from 'console';
 import { T } from './libs/types/common';
+import { SocketModule } from './socket/socket.module';
 
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { T } from './libs/types/common';
       }
     }), 
     ComponentsModule,//bu yerga back end ni asosiy mantig'i joylashgan va har bir module ni o'zining import va providerlari mavjud 
-    DatabaseModule//
+    DatabaseModule,//
+    SocketModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],
