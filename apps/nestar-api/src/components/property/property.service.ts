@@ -145,10 +145,10 @@ private shapeMatchQuery(match: T, input: PropertiesInquiry): void {
   } = input.search;
 //agar memberId mavjud bo'lsa match ga memberId ni yuklaydi
   if (memberId) match.memberId = shapeIntoMongoObjectId(memberId);
-  if (locationList) match.propertyLocation = { $in: locationList };//ma'lumotlarni array ko'rinishida olib beradi
-  if (roomsList) match.propertyRooms = { $in: roomsList };
-  if (bedsList) match.propertyBeds = { $in: bedsList };
-  if (typeList) match.propertyType = { $in: typeList };
+  if (locationList && locationList.length) match.propertyLocation = { $in: locationList };//ma'lumotlarni array ko'rinishida olib beradi
+  if (roomsList && roomsList.length) match.propertyRooms = { $in: roomsList };
+  if (bedsList && bedsList.length) match.propertyBeds = { $in: bedsList };
+  if (typeList && typeList.length) match.propertyType = { $in: typeList };
 
   if (pricesRange) match.propertyPrice = { $gte: pricesRange.start, $lte: pricesRange.end };
   if (periodsRange) match.createdAt = { $gte: periodsRange.start, $lte: periodsRange.end };
