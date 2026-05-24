@@ -1,16 +1,16 @@
 import {ObjectId} from "bson"
 
 export const availableAgentSorts = [
-    "createAt",
-    "updateAt",
+    "createdAt",
+    "updatedAt",
     "memberLikes",
     "memberViews",
     "memberRank"
 ]
 
 export const availableMemberSorts = [
-    "createAt",
-    "updateAt",
+    "createdAt",
+    "updatedAt",
     "memberLikes",
     "memberViews",
 ]
