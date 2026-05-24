@@ -103,7 +103,7 @@ export class MembersInquiry {
     limit!: number;
     
     @IsOptional()
-    @IsIn([availableAgentSorts])
+    @IsIn(availableAgentSorts)
     @Field(() => String, {nullable:true})
     sort?:string
 
@@ -111,7 +111,7 @@ export class MembersInquiry {
     @Field(() => Direction, {nullable:true})
     direction?:string
 
-    @IsNotEmpty()
+    @IsOptional()
     @Field(()=> MISearch)
-    search!: MISearch 
+    search?: MISearch 
 }

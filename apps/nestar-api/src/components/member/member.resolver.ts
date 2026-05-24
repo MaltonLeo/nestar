@@ -96,17 +96,17 @@ export class MemberResolver {
     @Roles(MemberType.ADMIN)
     @UseGuards(RolesGuard)
     @Query(()=> Members)
-    public async getAllMemberByAdmmin(
+    public async getAllMembersByAdmin(
         @Args('input') input: MembersInquiry): Promise<Members>{
         console.log("Query: getAllMembersByAdmin")
-        return await this.memberService.getAllMemberByAdmin(input);
+        return await this.memberService.getAllMembersByAdmin(input);
     }
 
     //Authorizarion ADMIN
     @Roles(MemberType.ADMIN)
     @UseGuards(RolesGuard)
     @Mutation(()=> Member)
-    public async updateMemberByAdmmin(
+    public async updateMemberByAdmin(
         @Args("input") input: MemberUpdate): Promise<Member>{
         console.log('Mutation : updateMemberByAdmin') 
         return await this.memberService.updateMemberByAdmin(input);

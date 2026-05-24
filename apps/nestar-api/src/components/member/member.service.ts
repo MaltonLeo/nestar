@@ -155,8 +155,8 @@ export class MemberService {
     }
 
    
-    public async getAllMemberByAdmin(input: MembersInquiry): Promise<Members>{
-        const {memberStatus, memberType,text} = input.search;
+    public async getAllMembersByAdmin(input: MembersInquiry): Promise<Members>{
+        const {memberStatus, memberType,text} = input.search ?? {};
        const match: T = {};
        const sort: T = {[input?.sort ?? "createdAt"]: input?.direction ?? Direction.DESC};
        
@@ -178,7 +178,7 @@ export class MemberService {
        ]).exec()
         
         if(!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND)
-        return result[0]
+        return result[0] ?? { list: [], metaCounter: [{ total: 0 }] };
     
     }
 
